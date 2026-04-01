@@ -1,6 +1,8 @@
 %%\documentclass[a4paper]{article}
-\usepackage{beamerarticle}
+%%\usepackage{beamerarticle}
 \documentclass[ignorenonframetext]{beamer}
+\usepackage[backend=biber, autocite=plain, style=vancouver]{biblatex}
+\addbibresource{referat.bib}
 \usepackage[polish]{babel}
 \usepackage[T1]{fontenc}
 \usepackage[utf8]{inputenc}
@@ -49,7 +51,7 @@
     \]
   \end{block}
 \end{frame}
-
+ O ile problemy programowania matematycznego można rozpatrywać na dowolnej dziedzinie \(A\), to znacznie prościej jest się ograniczyć do podzbiorów \(\mathbb{R}^{n}\). Znacznym uproszczeniem jest też przyjęcie dodatkowych założeń funkcjom celu i ograniczeń.
 \begin{frame}{Programowanie liniowe i całkowitoliczbowe}
   \begin{block}{Programowanie liniowe}
     Szukamy optimum funkcji liniowej przy liniowych ograniczeniach:
@@ -64,6 +66,8 @@
     były liczbami całkowitymi.
   \end{block}
 \end{frame}
+
+Jeżeli dodatkowo wymagamy, aby wszystkie (niektóre) współrzędne wektorów z \(X\) były liczbami całkowitymi, to będziemy mówić o (mieszanym) problemie programowania całkowitoliczbowego.
 
 \begin{frame}{Jak to wykorzystać w komunikacji zbiorowej?}
   \begin{columns}[T]
@@ -130,6 +134,19 @@
   \end{itemize}
 \end{frame}
 
+Graf \emph{change \& go} formalnie:
+\begin{flalign*}
+  & \mathcal{G} = (\mathcal{V}, \mathcal{E}) \\
+  & \mathcal{V} = \mathcal{V}_{CG} \cup \mathcal{V}_{OD} \\
+  & \mathcal{V}_{CG} = \{ (s, l) \in S \times \mathcal{L} : s \in V(l)\} \\
+  & \mathcal{V}_{OD} = \{ (s, \emptyset) : (s,t) \in R \lor (t,s) \in R\} \\
+  & \mathcal{E} = \mathcal{E}_{C} \cup \mathcal{E}_{G} \cup \mathcal{E}_{OD} \\
+  & \mathcal{E}_{C} = \{ ((s, l_1), (s, l_2)) \in \mathcal{V}_{CG} \times \mathcal{V}_{CG} \} \\
+  & \mathcal{E}_{G} = \bigcup_{l \in \mathcal{L}} \{ ((s_1, l), (s_2, l)) \in \mathcal{V}_{CG} \times \mathcal{V}_{CG} : s_1s_2 \in E\} \\
+  & \mathcal{E}_{OD} = \bigcup_{\substack{(s,t) \in R, \, l \in \mathcal{L} \\ s,t \in V(l)}} 
+  \Bigl\{ \bigl( (s, \varnothing), (s, l) \bigr), \, \bigl( (t, l), (t, \varnothing) \bigr) \Bigr\} 
+\end{flalign*}
+
 \begin{frame}{Wagi krawędzi w grafie \emph{change \& go}}
   \[
     c_e =
@@ -145,7 +162,9 @@
   \item \(k_2\) -- koszt przesiadki.
   \end{itemize}
 \end{frame}
+
 Jeżeli interesuje nas tylko minimalizacja przesiadek, to możemy przyjąć, \(k_1 = 0, k_2 = 1\), jeżeli realistyczny czas przejazdu, to \(k_1 = 1\), a \(k_2\) to oszacowany czas przesiadki w tej samej jednostce, co czas pokonania krawędzi.
+
 \begin{frame}{Ograniczenia w modelu Schöbel--Scholl}
   Model musi spełniać trzy grupy warunków:
   \begin{enumerate}
@@ -156,7 +175,7 @@ Jeżeli interesuje nas tylko minimalizacja przesiadek, to możemy przyjąć, \(k
   Dodatkowo zmienne \(x_{st}^e\) i \(f_l\), reprezentujące przepływ pasażerów i częstotliwości linii, są całkowite.
 \end{frame}
 
-\begin{frame}{Model Schöbel--Scholl w pełni swojej okazałości}
+\begin{frame}{Model Schöbel--Scholl}
   \small
   \[
     \min \sum_{(s,t) \in R} \sum_{e \in \mathcal{E}} c_e x_{st}^e
@@ -171,6 +190,38 @@ Jeżeli interesuje nas tylko minimalizacja przesiadek, to możemy przyjąć, \(k
   \end{itemize}
 \end{frame}
 
+Równania przepływu
+
+Musimy znaleźć rozwiązania problemów sieci przepływowych
+\[
+  \forall (s, t) \in R \: \theta x_{st} = b_{st}
+\]
+\begin{itemize}
+\item \(\theta \in \mathbb{Z}^{|\mathcal{V}| \times |\mathcal{E}|}\) -- macierz incydencji wierzchołków i krawędzi \(\mathcal{G}\)
+\item \(x_{st} \in \mathbb{Z}^{|\mathcal{E}|}\) -- przepływ pasażerów z \(s\) do \(t\) po krawędzi \(e\)
+\item \(b_{st} \in \mathbb{Z}^{|\mathcal{V}|}\), taki że:
+  \[
+    b_{st}^{i} =
+    \begin{cases}
+      w_{st} & i = (s, \emptyset)\\
+      -w_{st} & i = (t, \emptyset)\\
+      0 & \text{wpp.}
+    \end{cases}
+  \]
+\end{itemize}
+
+Ograniczenia Infranstruktury
+
+\begin{enumerate}
+\item \(\displaystyle \forall l \in \mathcal{L} \, \forall e \in \mathcal{E}_{l} \: x_{st}^{e} \le N \cdot f_{l} \)
+\item \(\displaystyle \forall k \in E \: \sum_{l \in \mathcal{L} : k \in \mathcal{E}_{l}}f_{l} \le f_{k}^{max} \)
+\end{enumerate}
+\begin{itemize}
+\item \(\mathcal{E}_{l} \subset \mathcal{E}_{G}\) -- krawędzie, po których prowadzi linia \(l\)
+\item \(N\) -- pojemność jednego pojazdu
+\item \(f_{k}^{max}\) -- maksymalna liczba pojazdów na danej krawędzi w analizowanym okresie
+\end{itemize}
+
 \begin{frame}{Wady modelu Schöbel--Scholl}
   \begin{alertblock}{Najważniejsze ograniczenia}
     \begin{itemize}
@@ -180,6 +231,33 @@ Jeżeli interesuje nas tylko minimalizacja przesiadek, to możemy przyjąć, \(k
     \end{itemize}
   \end{alertblock}
 \end{frame}
+
+Koszt ograniczony przez z góry ustalony budżet
+
+\[
+  \sum_{l \in \mathcal{L}} C_{l}f_{l} \le B
+\]
+\begin{itemize}
+\item \(C_{l}\) -- koszt operacyjny 1 kursu na linii \(l\)
+\item \(B\) -- ustalony budżet.
+\end{itemize}
+
+Pasażerowie jadą w 1 kawałku
+
+\[
+  \forall (s, t) \in R, e \in \mathcal{E}, l \in \mathcal{L} \: x_{st}^{e},f_{l} \in \mathbb{N}
+\]
+
+Pełen Model
+
+\begin{alignat*}{3}
+  \min \quad & \sum_{(s, t) \in R} \sum_{e \in \mathcal{E}} c_{e}x_{st}^{e} && \quad \text{takie że:} && \\
+             & x_{st}^{e} \le N \cdot f_{l} && \quad && \forall l \in \mathcal{L}, \forall e \in \mathcal{E}_{l} \\
+             & \theta x_{st} = b_{st}       && \quad && \forall (s, t) \in R \\
+             & \sum_{l \in \mathcal{L}} C_{l}f_{l} \le B && \quad && \\
+             & \sum_{\substack{l \in \mathcal{L} \\ k \in \mathcal{E}_{l}}} f_{l} \le f_{k}^{\max} && \quad && \forall k \in E \\
+             & x_{st}^{e}, f_{l} \in \mathbb{N} && \quad && \forall (s, t) \in R, e \in \mathcal{E}, l \in \mathcal{L}
+\end{alignat*}
 
 \section{Model Nachtigall--Jerosch}
 
@@ -230,12 +308,45 @@ Jeżeli interesuje nas tylko minimalizacja przesiadek, to możemy przyjąć, \(k
   Im większa wartość \(\omega\), tym atrakcyjniejsza podróż. Podróże o~ujemnej wartości \(\omega\) uznajemy za nieakceptowalne.
 \end{frame}
 
+Wagi krawędzi
+
+\[
+  \omega^{st}_{(ab), l} =
+  \begin{cases}
+    -\Time_{(ab), l} & a = s, b \ne t  \\
+    -\Time_{(ab), l} - \beta & a \ne s, b \ne t \\
+    \rho t_{st}^{*}- \Time_{(ab), l} - \beta & a \ne s, b = t \\
+    \rho t_{st}^{*} - \Time_{(ab), l} & a = s, b = t
+  \end{cases}
+\]
+
 \begin{frame}{Dwa poziomy optymalizacji w modelu Nachtigall--Jerosch}
   \begin{enumerate}
   \item \textbf{Traffic assignment}: rozdział pasażerów na akceptowalne ścieżki.
   \item \textbf{Line planning}: dobór częstotliwości linii przy ograniczeniach kosztu i infrastruktury.
   \end{enumerate}
 \end{frame}
+
+
+Traffic Assignment
+
+\begin{alignat*}{3}
+  \max \: & \sum_{(s, t) \in R} \sum_{l \in \mathcal{L}} \sum_{a, b \in V(l)} \omega^{st}_{(ab), l} \varphi^{st}_{(ab), l} & \text{takie że:} \\
+          & \sum_{l \in \mathcal{L}} \sum_{a \in V(l)} \varphi^{st}_{(at), l} \le w_{st} & \forall (s, t) \in R\\
+          & \sum_{l \in \mathcal{L}} \sum_{a \in V(l)} \varphi^{st}_{(ax), l} - \sum_{l \in \mathcal{L}} \sum_{b \in V(l)} \varphi^{st}_{(xb), l} = 0 & \quad \forall (s, t) \in R, x \not \in \{s, t\} \\
+          & \varphi^{st}_{(ab), l} \in \mathbb{Q}_{+}
+\end{alignat*}
+
+
+Line Planning
+
+\begin{alignat*}{2}
+  & \sum_{(s, t) \in R} \sum_{\substack{a, b \in V(l) \\ e \in l_{|ab}}} \varphi^{st}_{(xb), l} \le Nf_{l} & \quad \forall e \in E, l \in \mathcal{L} \\
+  & \sum_{l \in \mathcal{L}} C_{l}f_{l} \le B \\
+  & \sum_{\substack{l \in \mathcal{L} \\ e \in l}} f_{l} \le f^{max}(e) & \forall e \in E \\
+  & \sum_{\substack{v \in \mathcal{V} \\ l \text{ serves } v}} f_{l} \le f^{max}(v) & \forall v \in V \\
+  & f_{l} \in \mathbb{N} 
+\end{alignat*}
 
 \begin{frame}{Porównanie modeli}
   \small
@@ -248,11 +359,11 @@ Jeżeli interesuje nas tylko minimalizacja przesiadek, to możemy przyjąć, \(k
   \end{tabular}
 \end{frame}
 
-% Modele line planning pozwalają formalnie opisać kompromis między kosztem a wygodą pasażera. Model Schöbel--Scholl jest bardzo naturalny, ale kosztowny obliczeniowo. Model Nachtigall--Jerosch lepiej uwzględnia akceptowalność podróży i jest bardziej praktyczny. W rzeczywistym planowaniu trzeba łączyć jakość modelu z możliwością jego rozwiązania.
+Modele line planning pozwalają formalnie opisać kompromis między kosztem a wygodą pasażera. Model Schöbel--Scholl jest bardzo naturalny, ale kosztowny obliczeniowo. Model Nachtigall--Jerosch lepiej uwzględnia akceptowalność podróży i jest bardziej praktyczny. W rzeczywistym planowaniu trzeba łączyć jakość modelu z możliwością jego rozwiązania.
 
 \begin{frame}{Dziękuję za uwagę}
-  \centering
-  Pytania?
+  \nocite{*}
+  \printbibliography
 \end{frame}
 
 \end{document}
