@@ -395,6 +395,71 @@ Pełen Model
     \item Nie rozróżnia podróży akceptowalnych i nieakceptowalnych.
     \end{itemize}
   \end{alertblock}
+  \only<1> {
+    \centering
+    \resizebox{0.6\textwidth}{!}{
+    \begin{tikzpicture}[
+      v_node/.style={circle, draw, fill=white, inner sep=1.2pt},
+      sink/.style={circle, draw, fill=violet!20, inner sep=1.2pt, minimum size=0.01cm, font=\tiny},
+      clique/.style={thick, violet!50},
+      change/.style={thin, black},
+      path_B/.style={thick, yellow!80!orange},
+      path_G/.style={thick, red},
+      path_Gr/.style={thick, green!60!black}
+      ]
+      
+      % Coordinates for the 7 clusters
+      \foreach \i/\x/\y in {1/-3/-1.5, 2/-3/1.5, 3/-1.5/0, 4/0/0, 5/1.5/0, 6/3/-1.5, 7/3/1.5}
+      \coordinate (C\i) at (\x,\y);
+      
+      % Cluster 1 (2 paths + Sink = 3)
+      \node[sink] (S1) at (C1) {1};
+      \node[v_node] (V1-B) at ([shift=(150:-0.5)]C1) {};
+      \node[v_node] (V1-G) at ([shift=(210:-0.5)]C1) {};
+      \draw[clique] (S1) -- (V1-B);
+      \draw[clique] (V1-G) -- (S1);
+      \draw[change] (V1-G) -- (V1-B);
+      
+      % Cluster 2 (1 path + Sink = 2)
+      \node[sink] (S2) at (C2) {2};
+      \node[v_node] (V2-Gr) at ([shift=(0:0.5)]C2) {};
+      \draw[clique] (S2) -- (V2-Gr);
+      
+      % Cluster 3, 4, 5 (3 paths + Sink = 4)
+      \foreach \i in {3,4,5} {
+        \node[sink] (S\i) at (C\i) {\i};
+        \node[v_node] (V\i-Gr) at ([shift=(60:0.6)]C\i) {};
+        \node[v_node] (V\i-G) at ([shift=(-20:-0.6)]C\i) {};
+        \node[v_node] (V\i-B) at ([shift=(300:0.6)]C\i) {};
+        \draw[change] (V\i-B) -- (V\i-Gr) -- (V\i-G) --(V\i-B); 
+        \draw[clique] (V\i-G) -- (S\i);
+        \draw[clique] (V\i-Gr) -- (S\i);
+        \draw>[clique] (V\i-B) -- (S\i);
+      }
+      
+      % Cluster 6 (1 path + Sink = 2)
+      \node[sink] (S6) at (C6) {6};
+      \node[v_node] (V6-B) at ([shift=(0:-0.5)]C6) {};
+      \draw[clique] (S6) -- (V6-B);
+      
+      % Cluster 7 (2 paths + Sink = 3)
+      \node[sink] (S7) at (C7) {7};
+      \node[v_node] (V7-Gr) at ([shift=(30:-0.5)]C7) {};
+      \node[v_node] (V7-G) at ([shift=(330:-0.5)]C7) {};
+      \draw[clique] (S7) -- (V7-Gr);
+      \draw[clique] (V7-G) -- (S7);
+      \draw[change] (V7-G) -- (V7-Gr);
+      
+      % Simple Edges between line vertices
+      \draw[path_B] (V1-B) -- (V3-B) -- (V4-B) -- (V5-B) -- (V6-B);
+      \draw[path_G] (V1-G) -- (V3-G) -- (V4-G) -- (V5-G) -- (V7-G);
+      \draw[path_Gr] (V2-Gr) -- (V3-Gr) -- (V4-Gr) -- (V5-Gr) -- (V7-Gr);   
+    \end{tikzpicture}
+  }
+
+  }
+ 
+  \only<2>{
   \resizebox{0.95\textwidth}{!}{
     \begin{tikzpicture}[line width=3pt, line cap=round, line join=round]
 
@@ -448,7 +513,7 @@ Pełen Model
     
     \draw[metropink, rounded corners=10pt] (Kurdwanow) -- (Witosa) -- (Halszki) -- (Sanktuarium) -- (Lagiewniki)--([xshift=1, yshift=-5]Brozka) -- ([xshift=2]Ludwinow) -- ([xshift=2]RondoGrunwaldzkie) -- ([xshift=1, yshift=-1]Muzeum) -- ([yshift=-2]TeatrBagatela) -- ([yshift=-2]StaryKleparz) -- ([yshift=-2]DworzecGlowny) --([yshift=-2]RondoMogilskie) -- ([yshift=-2]Olsza) -- ([yshift=-2]RondoMlynskie) -- ([yshift=-2]BoraKomorowskiego) -- ([yshift=-2]Wislicka) -- ([yshift=-2]Czyzyny) -- ([yshift=-2]RondoKocmyrzowskie) -- ([yshift=-2]AlejaRoz) -- ([yshift=-2]ZalewNowohucki) -- ([yshift=-2]NowaHuta);
 
-    \draw<2>[metrogreen, rounded corners=20pt] (Opatkowice) -- (Kurdwanow) -- (Czyzyny);
+    \draw[metrogreen, rounded corners=20pt] (Opatkowice) -- (Kurdwanow) -- (Czyzyny);
     
     % Draw stations
     \node[station] at (Opatkowice) {};
@@ -482,8 +547,7 @@ Pełen Model
     \node[station] at (NowaHuta) {};
 
     % Labels
-    \node<1>[label style, anchor=east, xshift=-3pt] at (Opatkowice) {Opatkowice \textcolor{metroblue}{M1}};
-    \node<2>[label style, anchor=east, xshift=-3pt] at (Opatkowice) {Opatkowice \textcolor{metroblue}{M1} \textcolor{metrogreen}{M3}};
+    \node[label style, anchor=east, xshift=-3pt] at (Opatkowice) {Opatkowice \textcolor{metroblue}{M1} \textcolor{metrogreen}{M3}};
     \node[label style, anchor=east, xshift=-3pt] at (Kliny) {Kliny};
     \node[label style, anchor=east, xshift=-3pt] at (Kobierzyn) {Kobierzyn};
     \node[label style, anchor=east, xshift=-3pt] at (Lubostron) {Lubostron};
@@ -511,7 +575,7 @@ Pełen Model
     \node[label style, anchor=south west, rotate=-45, yshift=-20] at (NowaHuta) {Nowa Huta};
 
 \end{tikzpicture}
-  }
+  }}
 \end{frame}
 
 \section{Model Nachtigall--Jerosch}
@@ -784,7 +848,7 @@ Wagi krawędzi
     \hline
     Reprezentacja podróży & graf \emph{change \& go} & fragmenty ścieżek \\
     Obsługa popytu & pełna & częściowa \\
-    Złożoność obliczeń & duża & mniejsza (wciąż NP) \\
+    Nakład obliczeń & duża & mniejsza (wciąż NP) \\
   \end{tabular}
 \end{frame}
 
